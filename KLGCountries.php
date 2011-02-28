@@ -10,7 +10,6 @@
 class KLGCountries
 {
 	protected $language = 'EN';
-	protected $keepAllCaps = false;
 	protected $textFileContents = null;
 	protected $useUTF8 = true; 
 	
@@ -43,14 +42,7 @@ class KLGCountries
 		
 		return $this;
 	}
-	
-	public function setKeepAllCaps($flag = true)
-	{
-		$this->keepAllCaps = ($flag == true) ? true : false;
-		
-		return $this;
-	}
-	
+
 	public function setLanguage($lang)
 	{
 		$lang = strtoupper($lang);
@@ -70,12 +62,7 @@ class KLGCountries
 			$line = trim($line);
 			if (substr($line,0,1) != '#' && strlen($line)>0) {
 				$parts = explode(';',$line);
-				if (count($parts) != 2) throw new Exception('Error reading ISO-3166-CODE-LIST file at line '.($lineNumber+1));
-				if ($this->keepAllCaps == false) {
-					$parts[0] = strtolower($parts[0]);
-					$parts[0] = ucwords($parts[0]);
-					$parts[0] = $this->correctCountryName($parts[0],$this->language);
-				}
+				if (count($parts) != 2) throw new Exception('Error reading country info file at line '.($lineNumber+1));
 				if ($nameAsKey) {
 					$countries[$parts[0]] = $parts[1];
 				} else {
@@ -123,29 +110,14 @@ class KLGCountries
 	protected function getTextFileContents()
 	{
 		if ($this->textFileContents == null) {
-			$filepath = dirname(__FILE__).'/res/ISO-3166-CODE-LIST-'.$this->language.'.txt';
-			if (!is_file($filepath)) throw new Exception('ISO-3166-CODE-LIST file not found.');
+			$filepath = dirname(__FILE__).'/res/COUNTRIES-'.$this->language.'.csv';
+			if (!is_file($filepath)) throw new Exception('country info file not found.');
 			$this->textFileContents = file_get_contents($filepath);
 		}
-		if (strlen($this->textFileContents) == 0) throw new Exception('Requested ISO-3166-CODE-LIST file is empty.');
+		if (strlen($this->textFileContents) == 0) throw new Exception('Requested country info file file is empty.');
 		return $this->textFileContents;
 	}
-	
-	protected function correctCountryName($name, $language)
-	{
-		if ($language == 'EN') {
-			$name = str_replace(' Of',' of',$name);
-			$name = str_replace(' U.s.',' U.S.',$name);
-		}
-		
-		// We want the character after an opening bracket '(' to be upper case ...
-		$s = strpos($name,'(');
-		if ($s !== false) {
-			$name[($s+1)] = strtoupper($name[($s+1)]);
-		}
-		
-		return $name;
-	}
+
 	
 
 }
