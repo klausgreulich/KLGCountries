@@ -1,5 +1,6 @@
 <?php
-	require_once(dirname(__FILE__).'/../KLGCountries.php');
+        require_once(dirname(__FILE__).'/../KLGCountries.php');
+	//use lower case 2 character representation for the selected country
 	$selectedCountry = 'de';	
 ?>
 
